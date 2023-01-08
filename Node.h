@@ -7,13 +7,13 @@ class Node
 public:
     /// Default constructor, creates an empty node.
     Node();
-    /// Constructor, creates an edge with the specified value, cost and head.
+    /// Constructor, creates a node with the specified value, cost and head.
     Node(int value, int cost, Node* head);
 
     /// Gets the node's value.
-    const int getValue();
+    int getValue() const;
     /// Gets the node's cost.
-    const int getCost();
+    int getCost() const;
     /// Gets the node's next node.
     Node* getNextNode();
 

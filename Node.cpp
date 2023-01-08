@@ -7,12 +7,12 @@ Node::Node(int value, int cost, Node* head)
     this->next = head;
 }
 
-const int Node::getValue()
+int Node::getValue() const
 {
     return value;
 }
 
-const int Node::getCost()
+int Node::getCost() const
 {
     return cost;
 }

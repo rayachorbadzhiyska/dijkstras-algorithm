@@ -5,15 +5,15 @@
 class Edge
 {
 public:
-    /// Constructor, creating an edge with the specified source, destination and weight.
+    /// Constructor, creates an edge with the specified source, destination and weight.
     Edge(int source, int destination, int weight);
 
     /// Gets the edge's source.
-    const int getSource();
+    int getSource() const;
     /// Gets the edge's destination.
-    const int getDestination();
+    int getDestination() const;
     /// Gets the edge's weight.
-    const int getWeight();
+    int getWeight() const;
 
 private:
     int source;
