@@ -21,8 +21,8 @@ void MainWindow::showEvent(QShowEvent *event)
 
     //Disable all except core input.
     ui->visualizeGraphButton->setDisabled(true);
-    disableEdgeInput(true);
-    disableDijkstraInput(true);
+    toggleEdgeInput(false);
+    toggleDijkstraInput(false);
 
     //Connect input slots.
     connectInputSlots();
@@ -47,26 +47,26 @@ void MainWindow::setValidation()
 
 #define DISABLEINPUT {
 
-void MainWindow::disableCoreInput(bool flag)
+void MainWindow::toggleCoreInput(bool flag)
 {
-    ui->nodesCountText->setDisabled(flag);
-    ui->edgesCountText->setDisabled(flag);
-    ui->visualizeGraphButton->setDisabled(flag);
+    ui->nodesCountText->setEnabled(flag);
+    ui->edgesCountText->setEnabled(flag);
+    ui->visualizeGraphButton->setEnabled(flag);
 }
 
-void MainWindow::disableEdgeInput(bool flag)
+void MainWindow::toggleEdgeInput(bool flag)
 {
-    ui->edgeSourceText->setDisabled(flag);
-    ui->edgeDestinationText->setDisabled(flag);
-    ui->edgeWeightText->setDisabled(flag);
-    ui->addEdgeButton->setDisabled(flag);
+    ui->edgeSourceText->setEnabled(flag);
+    ui->edgeDestinationText->setEnabled(flag);
+    ui->edgeWeightText->setEnabled(flag);
+    ui->addEdgeButton->setEnabled(flag);
 }
 
-void MainWindow::disableDijkstraInput(bool flag)
+void MainWindow::toggleDijkstraInput(bool flag)
 {
-    ui->dijkstraSourceText->setDisabled(flag);
-    ui->dijkstraDestinationText->setDisabled(flag);
-    ui->dijkstraButton->setDisabled(flag);
+    ui->dijkstraSourceText->setEnabled(flag);
+    ui->dijkstraDestinationText->setEnabled(flag);
+    ui->dijkstraButton->setEnabled(flag);
 }
 
 #define DISABLEINPUTEND }
@@ -116,8 +116,8 @@ void MainWindow::on_visualizeGraphButton_clicked()
 
         //TODO: visualize graph
 
-        disableEdgeInput(false);
-        disableCoreInput(true);
+        toggleEdgeInput(true);
+        toggleCoreInput(false);
     }
     catch (const DijkstraInputException& ex)
     {
@@ -154,8 +154,8 @@ void MainWindow::on_addEdgeButton_clicked()
         //the ability to input more should be disabled.
         if (graph->getCurrentEdgeCount() == edgesCount)
         {
-            disableEdgeInput(true);
-            disableDijkstraInput(false);
+            toggleEdgeInput(false);
+            toggleDijkstraInput(true);
         }
     }
     catch (const DijkstraInputException& ex)

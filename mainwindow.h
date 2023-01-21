@@ -54,12 +54,12 @@ private:
 
     /// Sets the validation of the input line edits.
     void setValidation();
-    /// Disables/enables the core input, depending on the flag, provided as a parameter.
-    void disableCoreInput(bool flag);
-    /// Disables/enables the edge input, depending on the flag, provided as a parameter.
-    void disableEdgeInput(bool flag);
-    /// Disables/enables the dijkstra input, depending on the flag, provided as a parameter.
-    void disableDijkstraInput(bool flag);
+    /// Enables/disables the core input, depending on the flag, provided as a parameter.
+    void toggleCoreInput(bool flag);
+    /// Enables/disables the edge input, depending on the flag, provided as a parameter.
+    void toggleEdgeInput(bool flag);
+    /// Enables/disables the dijkstra input, depending on the flag, provided as a parameter.
+    void toggleDijkstraInput(bool flag);
     /// Connects the input slots to the corresponding signals.
     void connectInputSlots();
 };
