@@ -66,12 +66,6 @@ void Graph::addEdge(Edge* edge)
         throw DijkstraInputException("Edge already exists.");
     }
 
-    //Check whether the edge exists in the opposite direction -> no parallel edges allowed.
-    if (doesEdgeExist(edgeDestination, edgeSource))
-    {
-        throw DijkstraInputException("Edge already exists in the opposite direction.");
-    }
-
     //Create a new node with the new edge's destination as value, new edge's weight as cost,
     //and new edge's source as head.
     Node* newNode = new Node(edgeDestination, edgeWeight, head[edgeSource]);
