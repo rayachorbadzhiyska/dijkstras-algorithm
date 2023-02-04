@@ -23,6 +23,8 @@ set(PROJECT_SOURCES
         Edge.cpp
         Graph.h
         Graph.cpp
+        DijkstraException.h
+        DijkstraInputException.h
 )
 
 if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)

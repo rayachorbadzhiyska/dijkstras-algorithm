@@ -7,17 +7,17 @@ Edge::Edge(int source, int destination, int weight)
     this->weight = weight;
 }
 
-const int Edge::getSource()
+int Edge::getSource() const
 {
     return source;
 }
 
-const int Edge::getDestination()
+int Edge::getDestination() const
 {
     return destination;
 }
 
-const int Edge::getWeight()
+int Edge::getWeight() const
 {
     return weight;
 }

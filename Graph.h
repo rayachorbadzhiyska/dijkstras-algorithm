@@ -3,10 +3,13 @@
 
 #include "Node.h"
 #include "Edge.h"
+#include "qobject.h"
 
-///Represents a graph.
-class Graph
+/// Represents a graph.
+class Graph : public QObject
 {
+    Q_OBJECT
+
 public:
     /// Represents the head node of an adjacency list, containing the graph.
     Node** head;
@@ -19,10 +22,21 @@ public:
     /// Adds a graph edge.
     void addEdge(Edge* edge);
 
+    /// Gets the current edge count.
+    int getCurrentEdgeCount() const;
+    /// Sets the current edge count.
+    void setCurrentEdgeCount(int edgeCount);
+
+signals:
+    void currentEdgeCountValueChanged(int newValue);
+
 private:
     int nodeCount;
     int allEdgeCount;
-    int currentEdgeCount = 0;
+    int currentEdgeCount;
+
+    /// Returns whether the edge exists in the graph.
+    bool doesEdgeExist(int source, int destinaion);
 };
 
 #endif // GRAPH_H
