@@ -176,7 +176,10 @@ void MainWindow::onDijkstraInputChanged()
 
 void MainWindow::on_dijkstraButton_clicked()
 {
-    //TODO: display shortest path with dijkstra's algorithm
+    // Get entered source and destination
+    int source = ui->dijkstraSourceText->text().toInt();
+    int destination = ui->dijkstraDestinationText->text().toInt();
+    graph->calculateShortestPath(source, destination);
 }
 
 void MainWindow::connectInputSlots()

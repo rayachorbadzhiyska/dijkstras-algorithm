@@ -1,5 +1,6 @@
 #include "Graph.h"
 #include "DijkstraInputException.h"
+#include "MinHeap.h"
 
 Graph::Graph(int nodeCount, int edgeCount)
 {
@@ -86,6 +87,62 @@ void Graph::setCurrentEdgeCount(int edgeCount)
     currentEdgeCount = edgeCount;
 
     emit currentEdgeCountValueChanged(edgeCount);
+}
+
+void Graph::calculateShortestPath(int source, int destination) const
+{
+    // An array to hold the cost of the paths to a node with index i
+    int costs[nodeCount];
+
+    // An array to hold the path to a node throught a prevous node with the minimum value
+    int path[nodeCount];
+
+    MinHeap heap = MinHeap(nodeCount);
+
+    for(int i = 0; i < nodeCount; ++i)
+    {
+        costs[i] = INT_MAX;
+        path[i] = -1;
+        heap.nodes[i] = new HeapNode(i, costs[i]);
+        heap.setPosition(i, i);
+    }
+
+    // Change the cost of the source to be 0 because it is the first node that is visited
+    heap.nodes[source] = new HeapNode(source, costs[source]);
+    costs[source] = 0;
+    heap.decreaseCost(source, costs[source]);
+
+    // Traverse the Heap until all nodes' shortest paths are calculated
+    while(!heap.isEmpty())
+    {
+        // Get the minimum cost node's value
+        int minimumNodeValue = heap.getMinimumNode()->getValue();
+
+        // Traverse all adjacent nodes of the minimum one and update their costs
+        Node* adjacent = head[minimumNodeValue];
+        while(adjacent != nullptr)
+        {
+            int value = adjacent->getValue();
+
+            // Check if the cost of the node with the extracted value is calculated and if not =>
+            // the cost to this node throught the minimum node is less than the prevoiusly calculated cost
+            if(heap.doesNodeExist(value) && costs[minimumNodeValue] != INT_MAX && adjacent->getCost() + costs[minimumNodeValue] < costs[value])
+            {
+                costs[value] = adjacent->getCost() + costs[minimumNodeValue];
+                // store the path throught the node with the minimum value
+                path[value] = minimumNodeValue;
+                // Update the cost value of the node in the Heap
+                heap.decreaseCost(value, costs[value]);
+            }
+
+            adjacent = adjacent->getNextNode();
+        }
+    }
+
+    for(int i=0; i<nodeCount; i++)
+    {
+        printf("positions[%d] = %d; cost of %d = %d\n", i, heap.positions[i], i, costs[i]);
+    }
 }
 
 Graph::~Graph()
