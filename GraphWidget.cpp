@@ -137,7 +137,10 @@ std::vector< QPoint > GraphWidget::calculateNodeCoordinates(QPaintEvent *event) 
 
 void GraphWidget::drawEdge(QPainter *painter, QLine sourceDestLine, QRect sourceNodeRect) {
     QLineF sourceDestLineF = sourceDestLine.toLineF();
-    qreal arrowHeadEndt = 1 - ((sourceNodeRect.height() / 2) / sourceDestLineF.length());
+    // The line should begin at border of node, not center
+    // Position should be a fraction of the line's length due to using QPointF::pointAt()
+    qreal lineBeginningt = (sourceNodeRect.height() / 2) / sourceDestLineF.length();
+    qreal arrowHeadEndt = 1 - lineBeginningt;
     QPointF arrowHeadEnd = sourceDestLineF.pointAt(arrowHeadEndt);
     QLineF sourceNodeBorderLineF = QLineF(sourceDestLineF.p1(), arrowHeadEnd);
 
@@ -149,5 +152,5 @@ void GraphWidget::drawEdge(QPainter *painter, QLine sourceDestLine, QRect source
     arrowNormal.setAngle(arrowNormal.angle() - 180); // rotate 180
     painter->drawLine(arrowHeadEnd, arrowNormal.p2());
 
-    painter->drawLine(QLineF(sourceDestLineF.p1(), arrowHeadEnd));
+    painter->drawLine(QLineF(sourceDestLineF.pointAt(lineBeginningt), arrowHeadEnd));
 }

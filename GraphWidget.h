@@ -27,14 +27,17 @@ public slots:
     void unHighlightNode(int nodeValue);
     // Redraws the graph and removes the highlight from edge
     void unHighlightEdge(int source, int destination);
-
+    // Redraws the graph and removes all highlights
     void unHighlightAll();
 
 protected:
+    // Called on update()
     void paintEvent(QPaintEvent *event) override;
 
 private:
+    // Arranges all graph nodes on a single circle and returns coordinates of each node
     std::vector< QPoint > calculateNodeCoordinates(QPaintEvent *event);
+    // Draws a single edge, consisting of a line and arrow head
     void drawEdge(QPainter *painter, QLine sourceDestLine, QRect sourceNodeRect);
 
     QBrush circleBrush;
