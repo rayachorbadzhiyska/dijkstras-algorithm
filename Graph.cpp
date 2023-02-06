@@ -88,6 +88,11 @@ void Graph::setCurrentEdgeCount(int edgeCount)
     emit currentEdgeCountValueChanged(edgeCount);
 }
 
+int Graph::getCurrentNodeCount() const
+{
+    return nodeCount;
+}
+
 Graph::~Graph()
 {
     for (int i = 0; i < nodeCount; i++)

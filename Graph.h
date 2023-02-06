@@ -27,6 +27,8 @@ public:
     /// Sets the current edge count.
     void setCurrentEdgeCount(int edgeCount);
 
+    int getCurrentNodeCount() const;
+
 signals:
     void currentEdgeCountValueChanged(int newValue);
 

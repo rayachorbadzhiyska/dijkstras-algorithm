@@ -25,6 +25,8 @@ set(PROJECT_SOURCES
         Graph.cpp
         DijkstraException.h
         DijkstraInputException.h
+        GraphWidget.h
+        GraphWidget.cpp
 )
 
 if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
