@@ -199,7 +199,11 @@ void MainWindow::testUnhighlight() {
 
 void MainWindow::on_dijkstraButton_clicked()
 {
-    //TODO: display shortest path with dijkstra's algorithm
+    // Get entered source and destination
+    int source = ui->dijkstraSourceText->text().toInt();
+    int destination = ui->dijkstraDestinationText->text().toInt();
+    graph->calculateShortestPath(source, destination);
+    
     graphWidget->highlightNode(2);
     graphWidget->highlightEdge(3, 2);
     QTimer::singleShot(1000, this, &MainWindow::testUnhighlight);

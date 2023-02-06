@@ -25,6 +25,10 @@ set(PROJECT_SOURCES
         Graph.cpp
         DijkstraException.h
         DijkstraInputException.h
+        HeapNode.h
+        HeapNode.cpp
+        MinHeap.h
+        MinHeap.cpp
         GraphWidget.h
         GraphWidget.cpp
 )

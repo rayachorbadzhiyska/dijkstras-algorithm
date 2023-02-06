@@ -27,6 +27,9 @@ public:
     /// Sets the current edge count.
     void setCurrentEdgeCount(int edgeCount);
 
+    /// Caculates the shortest path between source and destintion nodes using the Dijkstra’s shortest path algorithm
+    void calculateShortestPath(int source, int destination) const;
+
     int getCurrentNodeCount() const;
 
 signals:
