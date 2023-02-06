@@ -47,6 +47,7 @@ private slots:
     /// Slot, executed when the open button is clicked.
     void on_openButton_clicked();
 
+    // TODO: Delete
     void testUnhighlight();
 
 private:
@@ -75,7 +76,10 @@ private:
     void toggleSaveButton(bool flag);
     /// Connects the input slots to the corresponding signals.
     void connectInputSlots();
-
+    // Repaints the graph widget and updates the list of edges and weights
+    void updateGraphVisualization();
+    // Pushes all edges (with their weights) to an QListWidget in the UI
+    // in case two weights are overlapping on the graph visualization
     void populateEdgeList();
 };
 

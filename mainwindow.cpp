@@ -130,8 +130,7 @@ void MainWindow::on_visualizeGraphButton_clicked()
         connect(graph, SIGNAL(currentEdgeCountValueChanged(int)), this, SLOT(updateCurrentEdgeLabel(int)));
         graph->setCurrentEdgeCount(0);
 
-        graphWidget->setGraph(graph);
-        graphWidget->visualize();
+        updateGraphVisualization();
 
         toggleEdgeInput(true);
         toggleCoreInput(false);
@@ -174,8 +173,7 @@ void MainWindow::on_addEdgeButton_clicked()
             toggleEdgeInput(false);
             toggleDijkstraInput(true);
             toggleSaveButton(true);
-            graphWidget->visualize();
-            populateEdgeList();
+            updateGraphVisualization();
         }
     }
     catch (const DijkstraInputException& ex)
@@ -212,7 +210,7 @@ void MainWindow::on_saveButton_clicked()
     if (!graph)
         return;
 
-    QString filename= QFileDialog::getSaveFileName(this, "Save As");
+    QString filename= QFileDialog::getSaveFileName(this, "Save As", "", "Text files (*.txt");
 
     if (filename.isEmpty())
         return;
@@ -240,46 +238,73 @@ void MainWindow::on_saveButton_clicked()
 
 void MainWindow::on_openButton_clicked()
 {
-    QString filename= QFileDialog::getOpenFileName(this, "Choose File");
+    QString filename= QFileDialog::getOpenFileName(this, "Choose File", "", "Text files (*.txt)");
     if(filename.isEmpty())
            return;
 
     QFile file(filename);
     if(file.open(QIODevice::ReadOnly | QIODevice::ReadWrite)) {
-        QString fileContent;
-        QTextStream in(&file);
-        // Read number of nodes and edges
-        QString line = in.readLine();
-        int nodes = line.split(u',')[0].toInt();
-        int edges = line.split(u',')[1].toInt();
+        try {
+            QString fileContent;
+            QTextStream in(&file);
 
-        nodesCount = nodes;
-        edgesCount = edges;
+            // Read number of nodes and edges
+            QStringList firstLineList = in.readLine().split(u',', Qt::SkipEmptyParts);
+            if (firstLineList.size() != 2) {
+                throw DijkstraException("File couldn't be parsed! First line is malformed.");
+            }
+            bool okNodes, okEdges;
+            int nodes = firstLineList[0].toInt(&okNodes);
+            int edges = firstLineList[1].toInt(&okEdges);
 
-        if (graph) {
-            delete graph;
+            if (!okNodes || !okEdges) {
+                throw DijkstraException("File couldn't be parsed! First line is malformed.");
+            }
+
+            nodesCount = nodes;
+            edgesCount = edges;
+
+            if (graph) {
+                delete graph;
+            }
+            graph = new Graph(nodes, edges);
+            updateCurrentEdgeLabel(edges);
+
+            // Read line by line, each line denotes an edge
+            while (!in.atEnd()) {
+                QStringList lineList = in.readLine().split(u',');
+                if (lineList.size() != 3) {
+                    throw DijkstraException("File couldn't be parsed! One of the lines is malformed.");
+                }
+                bool okSource, okDestination, okWeight;
+                int source = lineList[0].toInt(&okSource);
+                int destination = lineList[1].toInt(&okDestination);
+                int weight = lineList[2].toInt(&okWeight);
+                if (!okSource || !okDestination || !okWeight) {
+                    throw DijkstraException("File couldn't be parsed! One of the lines is malformed.");
+                }
+                Edge* edge = new Edge(source, destination, weight);
+                graph->addEdge(edge);
+            }
+            updateGraphVisualization();
+        } catch (const std::exception& ex) {
+            QMessageBox errorMessageBox;
+            errorMessageBox.critical(this, "Error", ex.what());
+            file.close();
+            return;
         }
-        graph = new Graph(nodes, edges);
-        updateCurrentEdgeLabel(edges);
-        while (!in.atEnd()) {
-            line = in.readLine();
-            int source = line.split(u',')[0].toInt();
-            int destination = line.split(u',')[1].toInt();
-            int weight = line.split(u',')[2].toInt();
-            Edge* edge = new Edge(source, destination, weight);
-            graph->addEdge(edge);
-        }
-        graphWidget->setGraph(graph);
-        graphWidget->visualize();
-        populateEdgeList();
 
         file.close();
+    } else {
+        QMessageBox errorMessageBox;
+        errorMessageBox.critical(this, "Error", "File could not be opened in the correct mode! Are you opening a .txt file?");
+        return;
     }
-
 
     toggleCoreInput(false);
     toggleEdgeInput(false);
     toggleDijkstraInput(true);
+    toggleSaveButton(true);
 }
 
 void MainWindow::connectInputSlots()
@@ -300,7 +325,14 @@ void MainWindow::connectInputSlots()
 
 #define SLOTSEND }
 
+void MainWindow::updateGraphVisualization() {
+    graphWidget->setGraph(graph);
+    graphWidget->visualize();
+    populateEdgeList();
+}
+
 void MainWindow::populateEdgeList() {
+    ui->edgeList->clear();
     int nodes = graph->getCurrentNodeCount();
     for (int source = 0; source < nodes; source++) {
         Node* sourceHead = graph->head[source];
