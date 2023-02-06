@@ -29,6 +29,8 @@ set(PROJECT_SOURCES
         HeapNode.cpp
         MinHeap.h
         MinHeap.cpp
+        GraphWidget.h
+        GraphWidget.cpp
 )
 
 if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)

@@ -4,10 +4,14 @@
 #include "Graph.h"
 #include "QRegularExpressionValidator"
 #include "QMessageBox"
+#include <QFileDialog>
+#include <QTimer>
+#include <iostream>
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
     , ui(new Ui::MainWindow)
+    , graph(nullptr)
 {
     ui->setupUi(this);
 }
@@ -23,6 +27,10 @@ void MainWindow::showEvent(QShowEvent *event)
     ui->visualizeGraphButton->setDisabled(true);
     toggleEdgeInput(false);
     toggleDijkstraInput(false);
+    toggleSaveButton(false);
+    toggleOpenButton(true);
+    graphWidget = new GraphWidget(this);
+    ui->graphLayout->addWidget(graphWidget, 0, 0);
 
     //Connect input slots.
     connectInputSlots();
@@ -67,6 +75,14 @@ void MainWindow::toggleDijkstraInput(bool flag)
     ui->dijkstraSourceText->setEnabled(flag);
     ui->dijkstraDestinationText->setEnabled(flag);
     ui->dijkstraButton->setEnabled(flag);
+}
+
+void MainWindow::toggleSaveButton(bool flag) {
+    ui->saveButton->setEnabled(flag);
+}
+
+void MainWindow::toggleOpenButton(bool flag) {
+    ui->openButton->setEnabled(flag);
 }
 
 #define DISABLEINPUTEND }
@@ -114,7 +130,8 @@ void MainWindow::on_visualizeGraphButton_clicked()
         connect(graph, SIGNAL(currentEdgeCountValueChanged(int)), this, SLOT(updateCurrentEdgeLabel(int)));
         graph->setCurrentEdgeCount(0);
 
-        //TODO: visualize graph
+        graphWidget->setGraph(graph);
+        graphWidget->visualize();
 
         toggleEdgeInput(true);
         toggleCoreInput(false);
@@ -156,6 +173,9 @@ void MainWindow::on_addEdgeButton_clicked()
         {
             toggleEdgeInput(false);
             toggleDijkstraInput(true);
+            toggleSaveButton(true);
+            graphWidget->visualize();
+            populateEdgeList();
         }
     }
     catch (const DijkstraInputException& ex)
@@ -174,12 +194,96 @@ void MainWindow::onDijkstraInputChanged()
     ui->dijkstraButton->setEnabled(isInputFilled);
 }
 
+void MainWindow::testUnhighlight() {
+//    graphWidget->unHighlightNode(2);
+    graphWidget->unHighlightAll();
+}
+
 void MainWindow::on_dijkstraButton_clicked()
 {
     // Get entered source and destination
     int source = ui->dijkstraSourceText->text().toInt();
     int destination = ui->dijkstraDestinationText->text().toInt();
     graph->calculateShortestPath(source, destination);
+    
+    graphWidget->highlightNode(2);
+    graphWidget->highlightEdge(3, 2);
+    QTimer::singleShot(1000, this, &MainWindow::testUnhighlight);
+}
+
+void MainWindow::on_saveButton_clicked()
+{
+    if (!graph)
+        return;
+
+    QString filename= QFileDialog::getSaveFileName(this, "Save As");
+
+    if (filename.isEmpty())
+        return;
+
+    QFile file(filename);
+    if (file.open(QIODevice::WriteOnly | QIODevice::ReadWrite)) {
+        QTextStream out(&file);
+        int nodes = graph->getCurrentNodeCount();
+        out << nodes << "," << graph->getCurrentEdgeCount() << "\n";
+        for (int source = 0; source < nodes; source++) {
+            Node* sourceHead = graph->head[source];
+            while (sourceHead != nullptr)
+            {
+                int destination = sourceHead->getValue();
+                int weight = sourceHead->getCost();
+                out << source << "," << destination << "," << weight << "\n";
+                sourceHead = sourceHead->getNextNode();
+            }
+        }
+
+        file.close();
+    }
+}
+
+
+void MainWindow::on_openButton_clicked()
+{
+    QString filename= QFileDialog::getOpenFileName(this, "Choose File");
+    if(filename.isEmpty())
+           return;
+
+    QFile file(filename);
+    if(file.open(QIODevice::ReadOnly | QIODevice::ReadWrite)) {
+        QString fileContent;
+        QTextStream in(&file);
+        // Read number of nodes and edges
+        QString line = in.readLine();
+        int nodes = line.split(u',')[0].toInt();
+        int edges = line.split(u',')[1].toInt();
+
+        nodesCount = nodes;
+        edgesCount = edges;
+
+        if (graph) {
+            delete graph;
+        }
+        graph = new Graph(nodes, edges);
+        updateCurrentEdgeLabel(edges);
+        while (!in.atEnd()) {
+            line = in.readLine();
+            int source = line.split(u',')[0].toInt();
+            int destination = line.split(u',')[1].toInt();
+            int weight = line.split(u',')[2].toInt();
+            Edge* edge = new Edge(source, destination, weight);
+            graph->addEdge(edge);
+        }
+        graphWidget->setGraph(graph);
+        graphWidget->visualize();
+        populateEdgeList();
+
+        file.close();
+    }
+
+
+    toggleCoreInput(false);
+    toggleEdgeInput(false);
+    toggleDijkstraInput(true);
 }
 
 void MainWindow::connectInputSlots()
@@ -200,8 +304,25 @@ void MainWindow::connectInputSlots()
 
 #define SLOTSEND }
 
+void MainWindow::populateEdgeList() {
+    int nodes = graph->getCurrentNodeCount();
+    for (int source = 0; source < nodes; source++) {
+        Node* sourceHead = graph->head[source];
+        while (sourceHead != nullptr)
+        {
+            int destination = sourceHead->getValue();
+            int weight = sourceHead->getCost();
+            ui->edgeList->addItem(QString("%1 -> %2; Weight = %3").arg(QString::number(source), QString::number(destination), QString::number(weight)));
+            sourceHead = sourceHead->getNextNode();
+        }
+    }
+    ui->edgeList->repaint();
+}
+
 MainWindow::~MainWindow()
 {
     delete ui;
+    delete graph;
+    delete graphWidget;
 }
 

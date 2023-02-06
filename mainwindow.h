@@ -2,6 +2,7 @@
 #define MAINWINDOW_H
 
 #include "Graph.h"
+#include "GraphWidget.h"
 #include <QMainWindow>
 
 QT_BEGIN_NAMESPACE
@@ -41,8 +42,16 @@ private slots:
     /// Slot, executed when the dijkstra button is clicked.
     void on_dijkstraButton_clicked();
 
+    /// Slot, executed when the save button is clicked.
+    void on_saveButton_clicked();
+    /// Slot, executed when the open button is clicked.
+    void on_openButton_clicked();
+
+    void testUnhighlight();
+
 private:
     Ui::MainWindow *ui;
+    GraphWidget *graphWidget;
 
     int nodesCount;
     int edgesCount;
@@ -60,8 +69,14 @@ private:
     void toggleEdgeInput(bool flag);
     /// Enables/disables the dijkstra input, depending on the flag, provided as a parameter.
     void toggleDijkstraInput(bool flag);
+    /// Enables/disables the open button, depending on the flag, provided as a parameter.
+    void toggleOpenButton(bool flag);
+    /// Enables/disables the save button, depending on the flag, provided as a parameter.
+    void toggleSaveButton(bool flag);
     /// Connects the input slots to the corresponding signals.
     void connectInputSlots();
+
+    void populateEdgeList();
 };
 
 #endif // MAINWINDOW_H

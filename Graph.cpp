@@ -145,6 +145,11 @@ void Graph::calculateShortestPath(int source, int destination) const
     }
 }
 
+int Graph::getCurrentNodeCount() const
+{
+    return nodeCount;
+}
+
 Graph::~Graph()
 {
     for (int i = 0; i < nodeCount; i++)
