@@ -15,6 +15,8 @@ public:
 
     /// Constructor - creates a Min-Heap with the given capacity
     MinHeap(int capacity);
+    /// Destructor - deallocates memory
+    ~MinHeap();
 
     /// Function to set the value of a node at a given position
     void setPosition(int position, int value);

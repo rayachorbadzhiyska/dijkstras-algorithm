@@ -11,6 +11,16 @@ MinHeap::MinHeap(int capacity)
     this->positions = new int[capacity];
 }
 
+MinHeap::~MinHeap()
+{
+    for(int i = 0; i < nodesCount; i++)
+    {
+        delete[] nodes[i];
+    }
+
+    delete[] nodes;
+};
+
 void MinHeap::setPosition(int position, int value)
 {
     this->positions[position] = value;
