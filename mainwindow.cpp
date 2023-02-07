@@ -223,7 +223,7 @@ void MainWindow::on_dijkstraButton_clicked()
             ui->dijkstraSourceText->clear();
             ui->dijkstraDestinationText->clear();
             graphWidget->unHighlightAll();
-            throw DijkstraInputException("Source and destination must be differnet.");
+            throw DijkstraInputException("Source and destination must be different.");
         }
         else
         {
@@ -326,6 +326,12 @@ void MainWindow::on_openButton_clicked()
                 Edge* edge = new Edge(source, destination, weight);
                 graph->addEdge(edge);
             }
+            ui->nodesCountText->clear();
+            ui->edgesCountText->clear();
+            ui->shortestPathLabel->setText("Shortest path: ");
+            ui->dijkstraSourceText->clear();
+            ui->dijkstraDestinationText->clear();
+            graphWidget->unHighlightAll();
             updateGraphVisualization();
         } catch (const std::exception& ex) {
             QMessageBox errorMessageBox;
