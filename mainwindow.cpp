@@ -53,7 +53,7 @@ void MainWindow::setValidation()
 
 #define VALIDATIONEND }
 
-#define DISABLEINPUT {
+#define TOGGLEINPUT {
 
 void MainWindow::toggleCoreInput(bool flag)
 {
@@ -85,7 +85,7 @@ void MainWindow::toggleOpenButton(bool flag) {
     ui->openButton->setEnabled(flag);
 }
 
-#define DISABLEINPUTEND }
+#define TOGGLEINPUTEND }
 
 #define SLOTS {
 
@@ -162,7 +162,8 @@ void MainWindow::on_addEdgeButton_clicked()
     try
     {
         Edge* edge = new Edge(source, destination, weight);
-        graph->addNode(edge);
+        graph->addEdge(edge);
+
         updateGraphVisualization();
 
         //If all the edges have been filled already,
@@ -323,7 +324,7 @@ void MainWindow::on_openButton_clicked()
                     throw DijkstraException("File couldn't be parsed! One of the lines is malformed.");
                 }
                 Edge* edge = new Edge(source, destination, weight);
-                graph->addNode(edge);
+                graph->addEdge(edge);
             }
             ui->nodesCountText->clear();
             ui->edgesCountText->clear();
