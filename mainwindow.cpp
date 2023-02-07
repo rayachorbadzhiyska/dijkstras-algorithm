@@ -162,7 +162,7 @@ void MainWindow::on_addEdgeButton_clicked()
     try
     {
         Edge* edge = new Edge(source, destination, weight);
-        graph->addEdge(edge);
+        graph->addNode(edge);
         updateGraphVisualization();
 
         //If all the edges have been filled already,
@@ -192,10 +192,51 @@ void MainWindow::onDijkstraInputChanged()
 
 void MainWindow::on_dijkstraButton_clicked()
 {
+    // Unhighlight paths if there is any highlighted
+    graphWidget->unHighlightAll();
+
     // Get entered source and destination
     int source = ui->dijkstraSourceText->text().toInt();
     int destination = ui->dijkstraDestinationText->text().toInt();
-    graph->calculateShortestPath(source, destination, graphWidget);
+
+    try
+    {
+        if(!graph->doesNodeExist(source))
+        {
+            // Resets UI
+            ui->shortestPathLabel->setText("Shortest path: ");
+            ui->dijkstraSourceText->clear();
+            graphWidget->unHighlightAll();
+            throw DijkstraInputException("Source does not exist in the graph.");
+        }
+        else if(!graph->doesNodeExist(destination))
+        {
+            ui->shortestPathLabel->setText("Shortest path: ");
+            ui->dijkstraDestinationText->clear();
+            graphWidget->unHighlightAll();
+            throw DijkstraInputException("Destination does not exist in the graph.");
+
+        } else if(source == destination)
+        {
+            ui->shortestPathLabel->setText("Shortest path: ");
+            ui->dijkstraSourceText->clear();
+            ui->dijkstraDestinationText->clear();
+            graphWidget->unHighlightAll();
+            throw DijkstraInputException("Source and destination must be differnet.");
+        }
+        else
+        {
+            // Calculates the path and update label'e text
+            std::string path = graph->calculateShortestPath(source, destination, graphWidget);
+            QString text = QString::fromStdString(path);
+            ui->shortestPathLabel->setWordWrap(true);
+            ui->shortestPathLabel->setText(text);
+        }
+    } catch(const DijkstraInputException& ex)
+    {
+        QMessageBox errorMessageBox;
+        errorMessageBox.critical(this, "Error", ex.what());
+    }
 }
 
 void MainWindow::on_saveButton_clicked()
@@ -282,7 +323,7 @@ void MainWindow::on_openButton_clicked()
                     throw DijkstraException("File couldn't be parsed! One of the lines is malformed.");
                 }
                 Edge* edge = new Edge(source, destination, weight);
-                graph->addEdge(edge);
+                graph->addNode(edge);
             }
             updateGraphVisualization();
         } catch (const std::exception& ex) {

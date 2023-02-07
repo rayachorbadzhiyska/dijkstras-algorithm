@@ -21,24 +21,16 @@ GraphWidget::GraphWidget(QWidget *parent)
 
 GraphWidget::~GraphWidget()
 {
-    for(int i = 0; i < graph->getCurrentNodeCount(); i++)
-    {
-        delete[] timers[i];
-    }
-
-    delete[] timers;
-
     delete graph;
 }
 
 void GraphWidget::setGraph(Graph *graph) {
     this->graph = graph;
-    this->timers = new QTimer*[graph->getCurrentNodeCount()];
 }
 
 void GraphWidget::scheduleTimerForDrawingPath(int source, int destination)
 {
-    QTimer* timer = new QTimer(this);
+    QTimer* timer = new QTimer();
 
     // Setup a timer that will execute a lambda function when expires. The purpose of the lambda function is to draw the path between source and detination
     connect(timer, &QTimer::timeout, [this, source, destination] {
@@ -50,7 +42,7 @@ void GraphWidget::scheduleTimerForDrawingPath(int source, int destination)
     // Start the timer 0.5 sec after the previous one
     timer->start(1000 + DELAY);
     DELAY += 500;
-    timers[source] = timer;
+    timers.push_back(timer);
 }
 
 void GraphWidget::visualize()
@@ -85,6 +77,17 @@ void GraphWidget::unHighlightEdge(int source, int destination)
 void GraphWidget::unHighlightAll() {
     highlightedEdges.clear();
     highlightedNodes.clear();
+
+    // Reset delay
+    DELAY = 0;
+
+    // Delete all timers
+    for(QTimer* timer : timers)
+    {
+        delete timer;
+    }
+    timers.clear();
+
     update();
 }
 

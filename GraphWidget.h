@@ -56,7 +56,7 @@ private:
     std::set< std::pair< int, int > > highlightedEdges;
 
     // An array of timers used to start a drawing process of path between source and destination; An index in the array corresponds to a node's value
-    QTimer** timers;
+    std::vector<QTimer*> timers;
 
     const QSize NODE_RECT_SIZE = QSize(20, 20);
     const int ARROW_HEAD_LENGTH = 10;
