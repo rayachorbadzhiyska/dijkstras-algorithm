@@ -8,6 +8,8 @@
 #include <random>
 #include <iostream>
 
+int DELAY = 0;
+
 GraphWidget::GraphWidget(QWidget *parent)
     : QWidget(parent), graph(nullptr)
 {
@@ -17,9 +19,30 @@ GraphWidget::GraphWidget(QWidget *parent)
     highlightPen = QPen(Qt::red, 2);
 }
 
-void GraphWidget::setGraph(Graph *graph)
+GraphWidget::~GraphWidget()
 {
+    delete graph;
+}
+
+void GraphWidget::setGraph(Graph *graph) {
     this->graph = graph;
+}
+
+void GraphWidget::scheduleTimerForDrawingPath(int source, int destination)
+{
+    QTimer* timer = new QTimer();
+
+    // Setup a timer that will execute a lambda function when expires. The purpose of the lambda function is to draw the path between source and detination
+    connect(timer, &QTimer::timeout, [this, source, destination] {
+        highlightNode(source);
+        highlightEdge(source, destination);
+        highlightNode(destination);
+    });
+
+    // Start the timer 0.5 sec after the previous one
+    timer->start(1000 + DELAY);
+    DELAY += 500;
+    timers.push_back(timer);
 }
 
 void GraphWidget::visualize()
@@ -54,6 +77,17 @@ void GraphWidget::unHighlightEdge(int source, int destination)
 void GraphWidget::unHighlightAll() {
     highlightedEdges.clear();
     highlightedNodes.clear();
+
+    // Reset delay
+    DELAY = 0;
+
+    // Delete all timers
+    for(QTimer* timer : timers)
+    {
+        delete timer;
+    }
+    timers.clear();
+
     update();
 }
 

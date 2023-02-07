@@ -1,6 +1,8 @@
 #include "Graph.h"
 #include "DijkstraInputException.h"
 #include "MinHeap.h"
+#include "GraphWidget.h"
+#include <QTimer>
 
 Graph::Graph(int nodeCount, int edgeCount)
 {
@@ -16,7 +18,7 @@ Graph::Graph(int nodeCount, int edgeCount)
     }
 }
 
-bool Graph::doesEdgeExist(int source, int destination)
+bool Graph::doesEdgeExist(int source, int destination) const
 {
     Node* sourceHead = head[source];
 
@@ -37,7 +39,12 @@ bool Graph::doesEdgeExist(int source, int destination)
     return false;
 }
 
-void Graph::addEdge(Edge* edge)
+bool Graph::doesNodeExist(int value) const
+{
+    return nodeCount > value && value >= 0;
+}
+
+void Graph::addNode(Edge* edge)
 {
     int edgeSource = edge->getSource();
     int edgeDestination = edge->getDestination();
@@ -89,7 +96,7 @@ void Graph::setCurrentEdgeCount(int edgeCount)
     emit currentEdgeCountValueChanged(edgeCount);
 }
 
-void Graph::calculateShortestPath(int source, int destination) const
+std::string Graph::calculateShortestPath(int source, int destination, GraphWidget* widget) const
 {
     // An array to hold the cost of the paths to a node with index i
     int costs[nodeCount];
@@ -133,16 +140,57 @@ void Graph::calculateShortestPath(int source, int destination) const
                 path[value] = minimumNodeValue;
                 // Update the cost value of the node in the Heap
                 heap.decreaseCost(value, costs[value]);
+
+                // Highlight the shortest path form the source to currently visited node in the Min-Heap if the path exists
+                if(adjacent && minimumNodeValue)
+                {
+                    widget->scheduleTimerForDrawingPath(minimumNodeValue, value);
+                }
             }
 
             adjacent = adjacent->getNextNode();
         }
     }
 
-    for(int i=0; i<nodeCount; i++)
+    std::string pathMessage = "";
+
+    // Check if there is a path to the specified destination
+    if(path[destination] != -1)
     {
-        printf("positions[%d] = %d; cost of %d = %d\n", i, heap.positions[i], i, costs[i]);
+        std::string steps = composePathToDestination(source, destination, path);
+        pathMessage = "Shortest path form " + std::to_string(source) + " to " + std::to_string(destination) + " is " + steps + " and its cost is " + std::to_string(costs[destination]);
     }
+    else
+    {
+        pathMessage = "There is no path form " + std::to_string(source) + " to " + std::to_string(destination);
+    }
+
+    return pathMessage;
+}
+
+std::string Graph::composePathToDestination(int source, int destination, int* path) const
+{
+    // String that will be used as a final path representation
+    std::string steps = "";
+
+    // Add destination to the final path
+    steps += std::to_string(destination) + "-";
+
+    // Get the nodes throught which the source can be accessed and add them to the final path
+    int pathDestination = path[destination];
+    steps += std::to_string(pathDestination) + "-";
+    while(pathDestination != source)
+    {
+        pathDestination = path[pathDestination];
+        steps += std::to_string(pathDestination) + "-";
+    }
+
+    // Remove the last '-' from the path
+    steps.pop_back();
+    // Reverse the path so it can be readable
+    std::reverse(steps.begin(), steps.end());
+
+    return steps;
 }
 
 int Graph::getCurrentNodeCount() const
