@@ -5,6 +5,7 @@
 #include <QPaintEvent>
 #include <math.h>
 
+#include <random>
 #include <iostream>
 
 GraphWidget::GraphWidget(QWidget *parent)
@@ -16,7 +17,8 @@ GraphWidget::GraphWidget(QWidget *parent)
     highlightPen = QPen(Qt::red, 2);
 }
 
-void GraphWidget::setGraph(Graph *graph) {
+void GraphWidget::setGraph(Graph *graph)
+{
     this->graph = graph;
 }
 
@@ -58,10 +60,11 @@ void GraphWidget::unHighlightAll() {
 void GraphWidget::paintEvent(QPaintEvent *event)
 {
     if (!graph) return;
+
     QPainter painter;
-    painter.setRenderHint(QPainter::Antialiasing, true);
     painter.begin(this);
     painter.setPen(circlePen);
+
     auto nodeCoords = calculateNodeCoordinates(event);
 
     painter.save();
@@ -70,41 +73,59 @@ void GraphWidget::paintEvent(QPaintEvent *event)
 
         painter.setBrush(circleBrush);
         painter.setPen(circlePen);
+        // Draw node's circle
         painter.drawEllipse(nodeRect);
 
         Node* destHead = graph->head[i];
         while (destHead != nullptr) {
-            auto destCoords = QPoint(nodeCoords[destHead->getValue()]);
+            auto destCoords = QPoint(nodeCoords[destHead->getValue()]); // center of destination node
             auto destRect = QRect(destCoords, NODE_RECT_SIZE);
             auto sourceDestLine = QLine(nodeRect.center(), destRect.center());
-            // Draw edge and weight
-            painter.drawText(sourceDestLine.center(), QString::number(destHead->getCost()));
 
+            QLineF borderToBorder;
             // Draw edges and arrow heads
             if (highlightedEdges.find(std::make_pair(i, destHead->getValue())) != highlightedEdges.end()) {
                 // Edge should be highlighted
                 painter.setPen(highlightPen);
-                drawEdge(&painter, sourceDestLine, nodeRect);
+                borderToBorder = drawEdge(&painter, sourceDestLine, nodeRect);
                 painter.setPen(circlePen);
             } else {
                 // Normal edge
-                drawEdge(&painter, sourceDestLine, nodeRect);
+                borderToBorder = drawEdge(&painter, sourceDestLine, nodeRect);
             }
+
+            // Draw weight along the edge
+            // Get bounding rect depending on weight and font
+            QFontMetrics fontMetrics(painter.font());
+            auto weightBoundingRect = fontMetrics.boundingRect(QString::number(destHead->getCost()));
+            // Accomodate space for border
+            weightBoundingRect.setWidth(weightBoundingRect.width() + 4);
+            weightBoundingRect.setHeight(weightBoundingRect.height() + 2);
+            weightBoundingRect.translate(-2, -1);
+
+            // Divide the edge into 6 "bands" and place the weight on a band depending on source and dest values
+            // In order to avoid overlap of weights when possible
+            qreal pointAlongEdget = float(((i + destHead->getValue()) % 6) + 1) / 7;
+            QPointF pointAlongEdge = borderToBorder.pointAt(pointAlongEdget);
+            QPoint weightRectTopLeft(pointAlongEdge.x() - weightBoundingRect.width() / 2, pointAlongEdge.y() - weightBoundingRect.height() / 2);
+            QRect weightRect = QRect(weightRectTopLeft, weightBoundingRect.size());
+            painter.setPen(QPen(circleBrush, 1));
+            painter.setBrush(QBrush(Qt::white));
+            painter.drawRect(weightRect);
+            painter.setPen(QPen(Qt::darkGreen));
+            painter.drawText(weightRect, Qt::AlignCenter, QString::number(destHead->getCost()));
 
             destHead = destHead->getNextNode();
         }
     }
     painter.restore();
 
-    // Draw highlights
-    painter.save();
+    // Draw highlighted nodes
     for (int node : highlightedNodes) {
         painter.setPen(highlightPen);
         auto nodeRect = QRect(nodeCoordinates[node], NODE_RECT_SIZE);
         painter.drawEllipse(nodeRect);
     }
-
-    painter.restore();
 
     // Draw node's numbers at the end so that they are on top
     for (int i = 0; i < nodeCoords.size(); i++) {
@@ -112,6 +133,7 @@ void GraphWidget::paintEvent(QPaintEvent *event)
         painter.setPen(textPen);
         painter.drawText(nodeRect, Qt::AlignCenter, QString::number(i));
     }
+
     painter.end();
 }
 
@@ -135,22 +157,26 @@ std::vector< QPoint > GraphWidget::calculateNodeCoordinates(QPaintEvent *event) 
     return nodeCoords;
 }
 
-void GraphWidget::drawEdge(QPainter *painter, QLine sourceDestLine, QRect sourceNodeRect) {
+QLineF GraphWidget::drawEdge(QPainter *painter, QLine sourceDestLine, QRect sourceNodeRect) {
     QLineF sourceDestLineF = sourceDestLine.toLineF();
     // The line should begin at border of node, not center
     // Position should be a fraction of the line's length due to using QPointF::pointAt()
     qreal lineBeginningt = (sourceNodeRect.height() / 2) / sourceDestLineF.length();
-    qreal arrowHeadEndt = 1 - lineBeginningt;
-    QPointF arrowHeadEnd = sourceDestLineF.pointAt(arrowHeadEndt);
+    QPointF arrowHeadEnd = sourceDestLineF.pointAt(1 - lineBeginningt);
+    //distance from center of source node to border of destination node
     QLineF sourceNodeBorderLineF = QLineF(sourceDestLineF.p1(), arrowHeadEnd);
 
     qreal arrowHeadBaset = 1 - (ARROW_HEAD_LENGTH / sourceNodeBorderLineF.length());
     QPointF arrowHeadBase = sourceNodeBorderLineF.pointAt(arrowHeadBaset);
 
+    // perpendicular to line starting from arrowhead base
     auto arrowNormal = QLineF(arrowHeadBase, sourceNodeBorderLineF.p2()).normalVector();
     painter->drawLine(arrowHeadEnd, arrowNormal.p2());
     arrowNormal.setAngle(arrowNormal.angle() - 180); // rotate 180
     painter->drawLine(arrowHeadEnd, arrowNormal.p2());
 
-    painter->drawLine(QLineF(sourceDestLineF.pointAt(lineBeginningt), arrowHeadEnd));
+    // draw line from border of source node to border of destination node
+    QLineF borderToBorder(sourceDestLineF.pointAt(lineBeginningt), arrowHeadEnd);
+    painter->drawLine(borderToBorder);
+    return borderToBorder;
 }

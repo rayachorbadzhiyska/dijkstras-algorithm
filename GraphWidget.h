@@ -17,7 +17,7 @@ public:
     void setGraph(Graph *graph);
 
 public slots:
-    // Visualize the graph
+    // Visualize the graph by repainting it
     void visualize();
     // Redraws the graph and highlights a node
     void highlightNode(int nodeValue);
@@ -38,7 +38,8 @@ private:
     // Arranges all graph nodes on a single circle and returns coordinates of each node
     std::vector< QPoint > calculateNodeCoordinates(QPaintEvent *event);
     // Draws a single edge, consisting of a line and arrow head
-    void drawEdge(QPainter *painter, QLine sourceDestLine, QRect sourceNodeRect);
+    // Returns line from source node border to dest node border
+    QLineF drawEdge(QPainter *painter, QLine sourceDestLine, QRect sourceNodeRect);
 
     QBrush circleBrush;
     QPen circlePen;

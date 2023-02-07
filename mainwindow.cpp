@@ -163,8 +163,7 @@ void MainWindow::on_addEdgeButton_clicked()
     {
         Edge* edge = new Edge(source, destination, weight);
         graph->addEdge(edge);
-
-        //TODO: add visualization of the edge on the graph
+        updateGraphVisualization();
 
         //If all the edges have been filled already,
         //the ability to input more should be disabled.
@@ -173,7 +172,6 @@ void MainWindow::on_addEdgeButton_clicked()
             toggleEdgeInput(false);
             toggleDijkstraInput(true);
             toggleSaveButton(true);
-            updateGraphVisualization();
         }
     }
     catch (const DijkstraInputException& ex)
@@ -223,7 +221,9 @@ void MainWindow::on_saveButton_clicked()
     if (file.open(QIODevice::WriteOnly | QIODevice::ReadWrite)) {
         QTextStream out(&file);
         int nodes = graph->getCurrentNodeCount();
+        // First line is always *node_count*,*edge_count
         out << nodes << "," << graph->getCurrentEdgeCount() << "\n";
+        // Iterate over graph and output each edge on a separate line
         for (int source = 0; source < nodes; source++) {
             Node* sourceHead = graph->head[source];
             while (sourceHead != nullptr)
@@ -261,6 +261,7 @@ void MainWindow::on_openButton_clicked()
             int nodes = firstLineList[0].toInt(&okNodes);
             int edges = firstLineList[1].toInt(&okEdges);
 
+            // Check if conversion to int was successful
             if (!okNodes || !okEdges) {
                 throw DijkstraException("File couldn't be parsed! First line is malformed.");
             }
@@ -284,6 +285,8 @@ void MainWindow::on_openButton_clicked()
                 int source = lineList[0].toInt(&okSource);
                 int destination = lineList[1].toInt(&okDestination);
                 int weight = lineList[2].toInt(&okWeight);
+
+                // Check if conversion to int was successful
                 if (!okSource || !okDestination || !okWeight) {
                     throw DijkstraException("File couldn't be parsed! One of the lines is malformed.");
                 }
@@ -297,7 +300,6 @@ void MainWindow::on_openButton_clicked()
             file.close();
             return;
         }
-
         file.close();
     } else {
         QMessageBox errorMessageBox;
