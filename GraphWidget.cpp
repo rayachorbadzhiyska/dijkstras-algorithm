@@ -109,11 +109,14 @@ void GraphWidget::paintEvent(QPaintEvent *event)
             QPointF pointAlongEdge = borderToBorder.pointAt(pointAlongEdget);
             QPoint weightRectTopLeft(pointAlongEdge.x() - weightBoundingRect.width() / 2, pointAlongEdge.y() - weightBoundingRect.height() / 2);
             QRect weightRect = QRect(weightRectTopLeft, weightBoundingRect.size());
+
+            painter.save();
             painter.setPen(QPen(circleBrush, 1));
             painter.setBrush(QBrush(Qt::white));
             painter.drawRect(weightRect);
             painter.setPen(QPen(Qt::darkGreen));
             painter.drawText(weightRect, Qt::AlignCenter, QString::number(destHead->getCost()));
+            painter.restore(); // restore previous pen and brush
 
             destHead = destHead->getNextNode();
         }
