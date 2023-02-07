@@ -23,7 +23,7 @@ public:
      */
     MainWindow(QWidget *parent = nullptr);
     /*!
-     * Destructor, deletes the UI.
+     * Destructor, deallocates memory.
      */
     ~MainWindow();
     /*!
