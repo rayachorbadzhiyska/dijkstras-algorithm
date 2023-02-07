@@ -5,8 +5,8 @@
 #include <QPen>
 #include <vector>
 #include <set>
+#include <QTimer>
 #include "Graph.h"
-
 
 class GraphWidget : public QWidget
 {
@@ -14,7 +14,11 @@ class GraphWidget : public QWidget
 
 public:
     GraphWidget(QWidget *parent);
+    ~GraphWidget();
     void setGraph(Graph *graph);
+
+    // Function used to schedule a timer to draw a path that had been processed in the algorithm
+    void scheduleTimerForDrawingPath(int source, int destination);
 
 public slots:
     // Visualize the graph by repainting it
@@ -50,6 +54,9 @@ private:
     std::vector< QPoint > nodeCoordinates;
     std::set< int > highlightedNodes;
     std::set< std::pair< int, int > > highlightedEdges;
+
+    // An array of timers used to start a drawing process of path between source and destination; An index in the array corresponds to a node's value
+    QTimer** timers;
 
     const QSize NODE_RECT_SIZE = QSize(20, 20);
     const int ARROW_HEAD_LENGTH = 10;

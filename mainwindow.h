@@ -47,9 +47,6 @@ private slots:
     /// Slot, executed when the open button is clicked.
     void on_openButton_clicked();
 
-    // TODO: Delete
-    void testUnhighlight();
-
 private:
     Ui::MainWindow *ui;
     GraphWidget *graphWidget;

@@ -1,6 +1,8 @@
 #include "Graph.h"
 #include "DijkstraInputException.h"
 #include "MinHeap.h"
+#include "GraphWidget.h"
+#include <QTimer>
 
 Graph::Graph(int nodeCount, int edgeCount)
 {
@@ -89,7 +91,7 @@ void Graph::setCurrentEdgeCount(int edgeCount)
     emit currentEdgeCountValueChanged(edgeCount);
 }
 
-void Graph::calculateShortestPath(int source, int destination) const
+void Graph::calculateShortestPath(int source, int destination, GraphWidget* widget) const
 {
     // An array to hold the cost of the paths to a node with index i
     int costs[nodeCount];
@@ -133,6 +135,12 @@ void Graph::calculateShortestPath(int source, int destination) const
                 path[value] = minimumNodeValue;
                 // Update the cost value of the node in the Heap
                 heap.decreaseCost(value, costs[value]);
+            }
+
+            // Highlight the shortest path form the source to currently visited node in the Min-Heap if the path exists
+            if(adjacent && minimumNodeValue)
+            {
+                widget->scheduleTimerForDrawingPath(minimumNodeValue, value);
             }
 
             adjacent = adjacent->getNextNode();

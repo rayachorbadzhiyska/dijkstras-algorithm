@@ -190,21 +190,12 @@ void MainWindow::onDijkstraInputChanged()
     ui->dijkstraButton->setEnabled(isInputFilled);
 }
 
-void MainWindow::testUnhighlight() {
-//    graphWidget->unHighlightNode(2);
-    graphWidget->unHighlightAll();
-}
-
 void MainWindow::on_dijkstraButton_clicked()
 {
     // Get entered source and destination
     int source = ui->dijkstraSourceText->text().toInt();
     int destination = ui->dijkstraDestinationText->text().toInt();
-    graph->calculateShortestPath(source, destination);
-    
-    graphWidget->highlightNode(2);
-    graphWidget->highlightEdge(3, 2);
-    QTimer::singleShot(1000, this, &MainWindow::testUnhighlight);
+    graph->calculateShortestPath(source, destination, graphWidget);
 }
 
 void MainWindow::on_saveButton_clicked()

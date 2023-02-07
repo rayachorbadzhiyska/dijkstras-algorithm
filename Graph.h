@@ -1,9 +1,10 @@
 #ifndef GRAPH_H
 #define GRAPH_H
-
 #include "Node.h"
 #include "Edge.h"
 #include "qobject.h"
+
+class GraphWidget;
 
 /// Represents a graph.
 class Graph : public QObject
@@ -28,7 +29,7 @@ public:
     void setCurrentEdgeCount(int edgeCount);
 
     /// Caculates the shortest path between source and destintion nodes using the Dijkstra’s shortest path algorithm
-    void calculateShortestPath(int source, int destination) const;
+    void calculateShortestPath(int source, int destination, GraphWidget* widget) const;
 
     int getCurrentNodeCount() const;
 
