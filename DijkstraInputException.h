@@ -3,7 +3,9 @@
 
 #include "DijkstraException.h"
 
-/// Represents a dijkstra input exception.
+/*!
+ *  Represents a Dijkstra input exception.
+ */
 class DijkstraInputException : public DijkstraException
 {
 public:
