@@ -20,6 +20,7 @@ public:
 
     /*!
      * Returns the value of the node
+     * \return int Node's value
      */
     int getValue() const;
     /*!
@@ -29,6 +30,7 @@ public:
     void setValue(int newValue);
     /*!
      * Returns the cost of the node
+     * \return int Node's cost
      */
     int getCost() const;
     /*!

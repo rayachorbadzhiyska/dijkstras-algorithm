@@ -22,7 +22,11 @@ public:
      */
     void setGraph(Graph *graph);
 
-    // Function used to schedule a timer to draw a path that had been processed in the algorithm
+    /*!
+     * Function used to schedule a timer to draw a path that had been processed in the algorithm
+     * \param source Path's source
+     * \param destination Path's destination
+     */
     void scheduleTimerForDrawingPath(int source, int destination);
 
 public slots:
@@ -99,8 +103,10 @@ private:
     std::set< int > highlightedNodes;
     std::set< std::pair< int, int > > highlightedEdges;
 
-    // An array of timers used to start a drawing process of path between source and destination;
-    // An index in the array corresponds to a node's value
+    /*!
+     * An array of timers used to start a drawing process of path between source and destination;
+     * An index in the array corresponds to a node's value
+     */
     std::vector<QTimer*> timers;
 
     const QSize NODE_RECT_SIZE = QSize(20, 20);

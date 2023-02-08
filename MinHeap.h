@@ -49,11 +49,13 @@ public:
 
     /*!
      * Function to determine if the Heap is empty
+     * \return bool If the Heap is empty
      */
     bool isEmpty() const;
     /*!
      * Fucntion to determine if a node with a given value is in the Heap
      * \param value The value of a node
+     * \return bool Whether a node exists in the Heap
      */
     bool doesNodeExist(int value) const;
 
@@ -76,6 +78,7 @@ private:
 
     /*!
      * Function to return the nodesCount value
+     * \return int Nodes count
      */
     int getNodesCount() const;
     /*!
@@ -87,16 +90,19 @@ private:
     /*!
      * Function used to return the index of the right child of a node at a given index
      * \param index Node's index
+     * \return int Index of the right child
      */
     int getRightChild(int index) const;
     /*!
      * Function used to return the index of the left child of a node at a given index
      * \param index Node's index
+     * \return int Index of the left child
      */
     int getLeftChild(int index) const;
     /*!
      * Function used to return the index of the parent node of a given one's index
      * \param index Node's index
+     * \return int Index of the parent
      */
     int getParent(int index) const;
 };
