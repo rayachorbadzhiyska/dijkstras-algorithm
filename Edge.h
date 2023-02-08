@@ -27,7 +27,7 @@ public:
     int getDestination() const;
     /*!
      *  Gets the edge's weight.
-     *  \return The edge's destination.
+     *  \return The edge's weight.
      */
     int getWeight() const;
 
