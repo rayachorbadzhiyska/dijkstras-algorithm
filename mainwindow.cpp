@@ -53,7 +53,7 @@ void MainWindow::setValidation()
 
 #define VALIDATIONEND }
 
-#define DISABLEINPUT {
+#define TOGGLEINPUT {
 
 void MainWindow::toggleCoreInput(bool flag)
 {
@@ -85,7 +85,7 @@ void MainWindow::toggleOpenButton(bool flag) {
     ui->openButton->setEnabled(flag);
 }
 
-#define DISABLEINPUTEND }
+#define TOGGLEINPUTEND }
 
 #define SLOTS {
 
@@ -162,7 +162,8 @@ void MainWindow::on_addEdgeButton_clicked()
     try
     {
         Edge* edge = new Edge(source, destination, weight);
-        graph->addNode(edge);
+        graph->addEdge(edge);
+
         updateGraphVisualization();
 
         //If all the edges have been filled already,
@@ -216,7 +217,8 @@ void MainWindow::on_dijkstraButton_clicked()
             graphWidget->unHighlightAll();
             throw DijkstraInputException("Destination does not exist in the graph.");
 
-        } else if(source == destination)
+        }
+        else if(source == destination)
         {
             ui->shortestPathLabel->setText("Shortest path: ");
             ui->dijkstraSourceText->clear();
@@ -232,7 +234,8 @@ void MainWindow::on_dijkstraButton_clicked()
             ui->shortestPathLabel->setWordWrap(true);
             ui->shortestPathLabel->setText(text);
         }
-    } catch(const DijkstraInputException& ex)
+    }
+    catch(const DijkstraInputException& ex)
     {
         QMessageBox errorMessageBox;
         errorMessageBox.critical(this, "Error", ex.what());
@@ -244,19 +247,21 @@ void MainWindow::on_saveButton_clicked()
     if (!graph)
         return;
 
-    QString filename= QFileDialog::getSaveFileName(this, "Save As", "", "Text files (*.txt");
+    QString filename = QFileDialog::getSaveFileName(this, "Save As", "", "Text files (*.txt");
 
     if (filename.isEmpty())
         return;
 
     QFile file(filename);
-    if (file.open(QIODevice::WriteOnly | QIODevice::ReadWrite)) {
+    if (file.open(QIODevice::WriteOnly | QIODevice::ReadWrite))
+    {
         QTextStream out(&file);
         int nodes = graph->getCurrentNodeCount();
         // First line is always *node_count*,*edge_count
         out << nodes << "," << graph->getCurrentEdgeCount() << "\n";
         // Iterate over graph and output each edge on a separate line
-        for (int source = 0; source < nodes; source++) {
+        for (int source = 0; source < nodes; source++)
+        {
             Node* sourceHead = graph->head[source];
             while (sourceHead != nullptr)
             {
@@ -279,16 +284,20 @@ void MainWindow::on_openButton_clicked()
            return;
 
     QFile file(filename);
-    if(file.open(QIODevice::ReadOnly | QIODevice::ReadWrite)) {
-        try {
+    if(file.open(QIODevice::ReadOnly | QIODevice::ReadWrite))
+    {
+        try
+        {
             QString fileContent;
             QTextStream in(&file);
 
             // Read number of nodes and edges
             QStringList firstLineList = in.readLine().split(u',', Qt::SkipEmptyParts);
-            if (firstLineList.size() != 2) {
+            if (firstLineList.size() != 2)
+            {
                 throw DijkstraException("File couldn't be parsed! First line is malformed.");
             }
+
             bool okNodes, okEdges;
             int nodes = firstLineList[0].toInt(&okNodes);
             int edges = firstLineList[1].toInt(&okEdges);
@@ -301,30 +310,37 @@ void MainWindow::on_openButton_clicked()
             nodesCount = nodes;
             edgesCount = edges;
 
-            if (graph) {
+            if (graph)
+            {
                 delete graph;
             }
+
             graph = new Graph(nodes, edges);
             updateCurrentEdgeLabel(edges);
 
             // Read line by line, each line denotes an edge
-            while (!in.atEnd()) {
+            while (!in.atEnd())
+            {
                 QStringList lineList = in.readLine().split(u',');
-                if (lineList.size() != 3) {
+                if (lineList.size() != 3)
+                {
                     throw DijkstraException("File couldn't be parsed! One of the lines is malformed.");
                 }
+
                 bool okSource, okDestination, okWeight;
                 int source = lineList[0].toInt(&okSource);
                 int destination = lineList[1].toInt(&okDestination);
                 int weight = lineList[2].toInt(&okWeight);
 
                 // Check if conversion to int was successful
-                if (!okSource || !okDestination || !okWeight) {
+                if (!okSource || !okDestination || !okWeight)
+                {
                     throw DijkstraException("File couldn't be parsed! One of the lines is malformed.");
                 }
                 Edge* edge = new Edge(source, destination, weight);
-                graph->addNode(edge);
+                graph->addEdge(edge);
             }
+
             ui->nodesCountText->clear();
             ui->edgesCountText->clear();
             ui->shortestPathLabel->setText("Shortest path: ");
@@ -332,14 +348,19 @@ void MainWindow::on_openButton_clicked()
             ui->dijkstraDestinationText->clear();
             graphWidget->unHighlightAll();
             updateGraphVisualization();
-        } catch (const std::exception& ex) {
+        }
+        catch (const std::exception& ex)
+        {
             QMessageBox errorMessageBox;
             errorMessageBox.critical(this, "Error", ex.what());
             file.close();
             return;
         }
+
         file.close();
-    } else {
+    }
+    else
+    {
         QMessageBox errorMessageBox;
         errorMessageBox.critical(this, "Error", "File could not be opened in the correct mode! Are you opening a .txt file?");
         return;
@@ -369,16 +390,19 @@ void MainWindow::connectInputSlots()
 
 #define SLOTSEND }
 
-void MainWindow::updateGraphVisualization() {
+void MainWindow::updateGraphVisualization()
+{
     graphWidget->setGraph(graph);
     graphWidget->visualize();
     populateEdgeList();
 }
 
-void MainWindow::populateEdgeList() {
+void MainWindow::populateEdgeList()
+{
     ui->edgeList->clear();
     int nodes = graph->getCurrentNodeCount();
-    for (int source = 0; source < nodes; source++) {
+    for (int source = 0; source < nodes; source++)
+    {
         Node* sourceHead = graph->head[source];
         while (sourceHead != nullptr)
         {
@@ -388,6 +412,7 @@ void MainWindow::populateEdgeList() {
             sourceHead = sourceHead->getNextNode();
         }
     }
+
     ui->edgeList->repaint();
 }
 

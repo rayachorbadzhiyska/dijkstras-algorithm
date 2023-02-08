@@ -44,7 +44,7 @@ bool Graph::doesNodeExist(int value) const
     return nodeCount > value && value >= 0;
 }
 
-void Graph::addNode(Edge* edge)
+void Graph::addEdge(Edge* edge)
 {
     int edgeSource = edge->getSource();
     int edgeDestination = edge->getDestination();

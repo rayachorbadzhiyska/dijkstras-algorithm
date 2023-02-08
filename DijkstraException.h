@@ -3,7 +3,9 @@
 
 #include <stdexcept>
 
-/// Represents a custom dijkstra exception.
+/*!
+ *  Represents a custom Dijkstra exception.
+ */
 class DijkstraException : public std::runtime_error
 {
 public:
