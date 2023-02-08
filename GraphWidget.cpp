@@ -13,15 +13,11 @@ int DELAY = 0;
 GraphWidget::GraphWidget(QWidget *parent)
     : QWidget(parent), graph(nullptr)
 {
+    // Initialize pens and brushes
     circleBrush = QBrush(Qt::black);
     circlePen = QPen(Qt::black);
     textPen = QPen(Qt::white);
     highlightPen = QPen(Qt::red, 2);
-}
-
-GraphWidget::~GraphWidget()
-{
-    delete graph;
 }
 
 void GraphWidget::setGraph(Graph *graph) {
@@ -32,7 +28,8 @@ void GraphWidget::scheduleTimerForDrawingPath(int source, int destination)
 {
     QTimer* timer = new QTimer();
 
-    // Setup a timer that will execute a lambda function when expires. The purpose of the lambda function is to draw the path between source and detination
+    // Setup a timer that will execute a lambda function when expires.
+    // The purpose of the lambda function is to draw the path between source and detination
     connect(timer, &QTimer::timeout, [this, source, destination] {
         highlightNode(source);
         highlightEdge(source, destination);
@@ -93,7 +90,7 @@ void GraphWidget::unHighlightAll() {
 
 void GraphWidget::paintEvent(QPaintEvent *event)
 {
-    if (!graph) return;
+    if (!graph) return; // No graph to draw
 
     QPainter painter;
     painter.begin(this);
@@ -185,6 +182,8 @@ std::vector< QPoint > GraphWidget::calculateNodeCoordinates(QPaintEvent *event) 
 
     nodeCoords.push_back(QPoint(x+cenX, y+cenY));
     for (int i = 1; i < nodeCount; i++) {
+        // Basically, we are multiplying the coordinates by the elements of
+        // a rotation matrix to rotate the coordinates counterclockwise
         int newX = x*cos(2*M_PI/nodeCount) - y*sin(2*M_PI/nodeCount);
         y=(y*cos(2*M_PI/nodeCount) + x*sin(2*M_PI/nodeCount));
         x = newX;
@@ -200,7 +199,7 @@ QLineF GraphWidget::drawEdge(QPainter *painter, QLine sourceDestLine, QRect sour
     // Position should be a fraction of the line's length due to using QPointF::pointAt()
     qreal lineBeginningt = (sourceNodeRect.height() / 2) / sourceDestLineF.length();
     QPointF arrowHeadEnd = sourceDestLineF.pointAt(1 - lineBeginningt);
-    //distance from center of source node to border of destination node
+    // distance from center of source node to border of destination node
     QLineF sourceNodeBorderLineF = QLineF(sourceDestLineF.p1(), arrowHeadEnd);
 
     qreal arrowHeadBaset = 1 - (ARROW_HEAD_LENGTH / sourceNodeBorderLineF.length());

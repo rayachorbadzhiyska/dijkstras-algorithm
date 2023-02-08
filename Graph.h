@@ -56,13 +56,15 @@ public:
     std::string calculateShortestPath(int source, int destination, GraphWidget* widget) const;
 
     /*!
-     * Returns the current node count
+     * Get the current node count
+     * \return int Current count of the nodes
      */
     int getCurrentNodeCount() const;
 
     /*!
      * Returns whether a node with a specified value exists in the graph
      * \param value The value of the node to be searched for
+     * \return bool Whether a node exists
      */
     bool doesNodeExist(int value) const;
 
@@ -91,6 +93,7 @@ private:
      * \param source The source node
      * \param destination The destination node
      * \param path Pointer to an array of paths to a nodes throught a prevous node with the minimum value
+     * \return string The formatted path from source to destination
      */
     std::string composePathToDestination(int source, int destination, int* path) const;
 };
