@@ -20,7 +20,8 @@ GraphWidget::GraphWidget(QWidget *parent)
     highlightPen = QPen(Qt::red, 2);
 }
 
-void GraphWidget::setGraph(Graph *graph) {
+void GraphWidget::setGraph(Graph *graph)
+{
     this->graph = graph;
 }
 
@@ -30,7 +31,8 @@ void GraphWidget::scheduleTimerForDrawingPath(int source, int destination)
 
     // Setup a timer that will execute a lambda function when expires.
     // The purpose of the lambda function is to draw the path between source and detination
-    connect(timer, &QTimer::timeout, [this, source, destination] {
+    connect(timer, &QTimer::timeout, [this, source, destination]
+    {
         highlightNode(source);
         highlightEdge(source, destination);
         highlightNode(destination);
@@ -71,7 +73,8 @@ void GraphWidget::unHighlightEdge(int source, int destination)
     update();
 }
 
-void GraphWidget::unHighlightAll() {
+void GraphWidget::unHighlightAll()
+{
     highlightedEdges.clear();
     highlightedNodes.clear();
 
@@ -83,6 +86,7 @@ void GraphWidget::unHighlightAll() {
     {
         delete timer;
     }
+
     timers.clear();
 
     update();
@@ -99,7 +103,8 @@ void GraphWidget::paintEvent(QPaintEvent *event)
     auto nodeCoords = calculateNodeCoordinates(event);
 
     painter.save();
-    for (int i = 0; i < nodeCoords.size(); i++) {
+    for (int i = 0; i < nodeCoords.size(); i++)
+    {
         auto nodeRect = QRect(nodeCoords[i], NODE_RECT_SIZE);
 
         painter.setBrush(circleBrush);
@@ -108,19 +113,23 @@ void GraphWidget::paintEvent(QPaintEvent *event)
         painter.drawEllipse(nodeRect);
 
         Node* destHead = graph->head[i];
-        while (destHead != nullptr) {
+        while (destHead != nullptr)
+        {
             auto destCoords = QPoint(nodeCoords[destHead->getValue()]); // center of destination node
             auto destRect = QRect(destCoords, NODE_RECT_SIZE);
             auto sourceDestLine = QLine(nodeRect.center(), destRect.center());
 
             QLineF borderToBorder;
             // Draw edges and arrow heads
-            if (highlightedEdges.find(std::make_pair(i, destHead->getValue())) != highlightedEdges.end()) {
+            if (highlightedEdges.find(std::make_pair(i, destHead->getValue())) != highlightedEdges.end())
+            {
                 // Edge should be highlighted
                 painter.setPen(highlightPen);
                 borderToBorder = drawEdge(&painter, sourceDestLine, nodeRect);
                 painter.setPen(circlePen);
-            } else {
+            }
+            else
+            {
                 // Normal edge
                 borderToBorder = drawEdge(&painter, sourceDestLine, nodeRect);
             }
@@ -152,17 +161,20 @@ void GraphWidget::paintEvent(QPaintEvent *event)
             destHead = destHead->getNextNode();
         }
     }
+
     painter.restore();
 
     // Draw highlighted nodes
-    for (int node : highlightedNodes) {
+    for (int node : highlightedNodes)
+    {
         painter.setPen(highlightPen);
         auto nodeRect = QRect(nodeCoordinates[node], NODE_RECT_SIZE);
         painter.drawEllipse(nodeRect);
     }
 
     // Draw node's numbers at the end so that they are on top
-    for (int i = 0; i < nodeCoords.size(); i++) {
+    for (int i = 0; i < nodeCoords.size(); i++)
+    {
         auto nodeRect = QRect(nodeCoords[i], NODE_RECT_SIZE);
         painter.setPen(textPen);
         painter.drawText(nodeRect, Qt::AlignCenter, QString::number(i));
@@ -171,7 +183,8 @@ void GraphWidget::paintEvent(QPaintEvent *event)
     painter.end();
 }
 
-std::vector< QPoint > GraphWidget::calculateNodeCoordinates(QPaintEvent *event) {
+std::vector< QPoint > GraphWidget::calculateNodeCoordinates(QPaintEvent *event)
+{
     // Calculate each node's center point
     int nodeCount = graph->getCurrentNodeCount();
     int cenX = event->rect().center().x();
@@ -181,7 +194,8 @@ std::vector< QPoint > GraphWidget::calculateNodeCoordinates(QPaintEvent *event) 
     int y = 12*(nodeCount);
 
     nodeCoords.push_back(QPoint(x+cenX, y+cenY));
-    for (int i = 1; i < nodeCount; i++) {
+    for (int i = 1; i < nodeCount; i++)
+    {
         // Basically, we are multiplying the coordinates by the elements of
         // a rotation matrix to rotate the coordinates counterclockwise
         int newX = x*cos(2*M_PI/nodeCount) - y*sin(2*M_PI/nodeCount);
@@ -189,11 +203,13 @@ std::vector< QPoint > GraphWidget::calculateNodeCoordinates(QPaintEvent *event) 
         x = newX;
         nodeCoords.push_back(QPoint(x+cenX, y+cenY));
     }
+
     nodeCoordinates = nodeCoords;
     return nodeCoords;
 }
 
-QLineF GraphWidget::drawEdge(QPainter *painter, QLine sourceDestLine, QRect sourceNodeRect) {
+QLineF GraphWidget::drawEdge(QPainter *painter, QLine sourceDestLine, QRect sourceNodeRect)
+{
     QLineF sourceDestLineF = sourceDestLine.toLineF();
     // The line should begin at border of node, not center
     // Position should be a fraction of the line's length due to using QPointF::pointAt()

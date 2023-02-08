@@ -17,14 +17,17 @@ public:
 
     /*!
      *  Gets the edge's source.
+     *  \return The edge's source.
      */
     int getSource() const;
     /*!
      *  Gets the edge's destination.
+     *  \return The edge's destination.
      */
     int getDestination() const;
     /*!
      *  Gets the edge's weight.
+     *  \return The edge's destination.
      */
     int getWeight() const;
 

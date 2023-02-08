@@ -17,14 +17,17 @@ public:
 
     /*!
      * Gets the node's value.
+     * \return The node's value.
      */
     int getValue() const;
     /*!
      * Gets the node's cost.
+     * \return The node's cost.
      */
     int getCost() const;
     /*!
      * Gets the node's next node.
+     * \return The next node.
      */
     Node* getNextNode();
 

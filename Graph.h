@@ -38,6 +38,7 @@ public:
 
     /*!
      * Gets the current edge count.
+     * \return The current edge count.
      */
     int getCurrentEdgeCount() const;
     /*!
