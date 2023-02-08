@@ -13,10 +13,15 @@ class GraphWidget : public QWidget
     Q_OBJECT
 
 public:
+    /*!
+     * GraphWidget constructor
+     *
+     * \param parent The parent widget
+     */
     GraphWidget(QWidget *parent);
-    ~GraphWidget();
 
-    /*! Set which graph the widget will visualize
+    /*!
+     *  Set which graph the widget will visualize
      *
      * \param graph The graph
      */
@@ -24,44 +29,51 @@ public:
 
     /*!
      * Function used to schedule a timer to draw a path that had been processed in the algorithm
+     *
      * \param source Path's source
      * \param destination Path's destination
      */
     void scheduleTimerForDrawingPath(int source, int destination);
 
 public slots:
-    /*! Visualize the graph by repainting it
+    /*!
+     *  Visualize the graph by repainting it
      *
      */
     void visualize();
 
-    /*! Redraws the graph and highlights a node
+    /*!
+     *  Redraws the graph and highlights a node
      *
      * \param nodeValue Node to be highlighted
      */
     void highlightNode(int nodeValue);
 
-    /*! Redraws the graph and highlights an edge
+    /*!
+     *  Redraws the graph and highlights an edge
      *
      * \param source Source node of edge
      * \param destination Destination node of edge
      */
     void highlightEdge(int source, int destination);
 
-    /*! Redraws the graph and removes the highlight from node
+    /*!
+     *  Redraws the graph and removes the highlight from node
      *
      * \param nodeValue Node to be unhighlighted
      */
     void unHighlightNode(int nodeValue);
 
-    /*! Redraws the graph and removes the highlight from edge
+    /*!
+     *  Redraws the graph and removes the highlight from edge
      *
      * \param source Source node of edge
      * \param destination Destination node of edge
      */
     void unHighlightEdge(int source, int destination);
 
-    /*! Redraws the graph and removes all highlights
+    /*!
+     *  Redraws the graph and removes all highlights
      *
      */
     void unHighlightAll();
@@ -93,6 +105,7 @@ private:
      */
     QLineF drawEdge(QPainter *painter, QLine sourceDestLine, QRect sourceNodeRect);
 
+    // Brushes and pens for drawing
     QBrush circleBrush;
     QPen circlePen;
     QPen textPen;
@@ -100,7 +113,13 @@ private:
 
     Graph *graph;
     std::vector< QPoint > nodeCoordinates;
+    /*!
+     * Holds all nodes which are currently highlighted
+     */
     std::set< int > highlightedNodes;
+    /*!
+     * Holds all edges which are currently highlighted
+     */
     std::set< std::pair< int, int > > highlightedEdges;
 
     /*!
