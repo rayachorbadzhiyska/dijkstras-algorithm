@@ -46,12 +46,24 @@ public:
      */
     void setCurrentEdgeCount(int edgeCount);
 
-    /// Caculates the shortest path between source and destintion nodes using the Dijkstra’s shortest path algorithm and returns information about the path to the specified source
+    /*!
+     * Caculates the shortest path between source and destintion nodes using the Dijkstra’s shortest path algorithm and returns information about the path to the specified source
+     * \param source The source node
+     * \param destination The destination node
+     * \param widget GraphWidget object used to draw the path
+     * \return string Representing the shortest path information
+     */
     std::string calculateShortestPath(int source, int destination, GraphWidget* widget) const;
 
+    /*!
+     * Returns the current node count
+     */
     int getCurrentNodeCount() const;
 
-    /// Returns whether a node with a specified value exists in the graph
+    /*!
+     * Returns whether a node with a specified value exists in the graph
+     * \param value The value of the node to be searched for
+     */
     bool doesNodeExist(int value) const;
 
 signals:
@@ -74,7 +86,12 @@ private:
      */
     bool doesEdgeExist(int source, int destinaion) const;
 
-    /// Returns a formatted path from source to destination using stored steps in path array
+    /*!
+     * Returns a formatted path from source to destination using stored steps in path array
+     * \param source The source node
+     * \param destination The destination node
+     * \param path Pointer to an array of paths to a nodes throught a prevous node with the minimum value
+     */
     std::string composePathToDestination(int source, int destination, int* path) const;
 };
 
